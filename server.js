@@ -3,6 +3,7 @@ import { getToken } from "./services/TokenService.js";
 import { sendPostRequest as sendNdviRequest } from "./services/NDVIService.js";
 import { sendPostRequest as sendTrueColorRequest } from "./services/TrueColorService.js";
 import { getStatistics } from "./services/StatisticsService.js";
+import {sendPostRequestForImage} from "./services/NDVIOnlyImage.js"
 
 const app = express();
 const port = 5000;
@@ -69,6 +70,27 @@ app.post("/sentinelStatistics", async (req, res) => {
   } catch (error) {
     console.error("Error fetching statistics:", error);
     res.status(500).json({ error: "Failed to fetch statistics" });
+  }
+});
+
+
+app.post("/ndviImage", async (req, res) => {
+  const { coordinates } = req.body;
+  if (!coordinates) {
+    return res.status(400).json({ error: "Coordinates are required" });
+  }
+
+  try {
+    const imageBuffer = await sendPostRequestForImage(coordinates);
+    if (imageBuffer) {
+      res.set("Content-Type", "image/jpeg");
+      res.send(imageBuffer);
+    } else {
+      res.status(500).json({ error: "Failed to process NDVI request" });
+    }
+  } catch (error) {
+    console.error("Error processing NDVI request:", error);
+    res.status(500).json({ error: "Failed to process NDVI request" });
   }
 });
 
