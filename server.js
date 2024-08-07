@@ -1,8 +1,8 @@
 import express from "express";
-import { getToken } from "../SentinelNodeService/services/TokenService.mjs";
-import { sendPostRequest as sendNdviRequest } from "../SentinelNodeService/services/NDVIService.mjs";
-import { sendPostRequest as sendTrueColorRequest } from "../SentinelNodeService/services/TrueColorService.mjs";
-import { getStatistics } from "../SentinelNodeService/services/StatisticsService.mjs";
+import { getToken } from "./services/TokenService.js";
+import { sendPostRequest as sendNdviRequest } from "./services/NDVIService.js";
+import { sendPostRequest as sendTrueColorRequest } from "./services/TrueColorService.js";
+import { getStatistics } from "./services/StatisticsService.js";
 
 const app = express();
 const port = 5000;

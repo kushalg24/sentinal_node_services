@@ -1,11 +1,11 @@
-import fetch from 'node-fetch';
-import { FormData } from 'formdata-node';
-import fs from 'fs';
-import { getToken } from './TokenService.mjs';
-import { uploadToCms } from './uploadToCms.mjs';
+import fetch from "node-fetch";
+import { FormData } from "formdata-node";
+import fs from "fs";
+import { getToken } from "./TokenService.js";
+import { uploadToCms } from "./uploadToCms.js";
 
 function getUniqueFilename() {
-  const timestamp = new Date().toISOString().replace(/[:.]/g, '-');
+  const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
   return `ndvi-${timestamp}.jpg`;
 }
 
@@ -14,46 +14,46 @@ export async function sendPostRequest(coordinates) {
 
   // Validate coordinates
   if (coordinates.flat().includes(null)) {
-    console.error('Invalid coordinates:', coordinates);
-    throw new Error('Invalid coordinates generated');
+    console.error("Invalid coordinates:", coordinates);
+    throw new Error("Invalid coordinates generated");
   }
 
   const request_data = {
     input: {
       bounds: {
         properties: {
-          crs: 'http://www.opengis.net/def/crs/OGC/1.3/CRS84'
+          crs: "http://www.opengis.net/def/crs/OGC/1.3/CRS84",
         },
         geometry: {
-          type: 'Polygon',
-          coordinates: [coordinates]
-        }
+          type: "Polygon",
+          coordinates: [coordinates],
+        },
       },
       data: [
         {
-          type: 'sentinel-2-l1c',
+          type: "sentinel-2-l1c",
           dataFilter: {
             timeRange: {
-              from: '2024-05-01T00:00:00Z',
-              to: '2024-05-05T00:00:00Z'
-            }
-          }
-        }
-      ]
+              from: "2024-05-01T00:00:00Z",
+              to: "2024-05-05T00:00:00Z",
+            },
+          },
+        },
+      ],
     },
     output: {
       width: 512,
       height: 512,
       responses: [
         {
-          identifier: 'default',
+          identifier: "default",
           format: {
-            type: 'image/jpeg',
-            quality: 80
-          }
-        }
-      ]
-    }
+            type: "image/jpeg",
+            quality: 80,
+          },
+        },
+      ],
+    },
   };
 
   const evalscript = `
@@ -95,23 +95,29 @@ function evaluatePixel(sample) {
 }`;
 
   const form = new FormData();
-  form.append('request', JSON.stringify(request_data));
-  form.append('evalscript', evalscript);
+  form.append("request", JSON.stringify(request_data));
+  form.append("evalscript", evalscript);
 
-  const response = await fetch('https://services.sentinel-hub.com/api/v1/process', {
-    method: 'POST',
-    headers: {
-      Authorization: `Bearer ${token}`
-    },
-    body: form
-  });
+  const response = await fetch(
+    "https://services.sentinel-hub.com/api/v1/process",
+    {
+      method: "POST",
+      headers: {
+        Authorization: `Bearer ${token}`,
+      },
+      body: form,
+    }
+  );
 
-  const contentType = response.headers.get('Content-Type');
-  if (contentType.includes('application/json')) {
+  const contentType = response.headers.get("Content-Type");
+  if (contentType.includes("application/json")) {
     const result = await response.json();
     console.error(result);
     return null;
-  } else if (contentType.includes('image/jpeg') || contentType.includes('application/octet-stream')) {
+  } else if (
+    contentType.includes("image/jpeg") ||
+    contentType.includes("application/octet-stream")
+  ) {
     const buffer = await response.arrayBuffer();
     const localFilePath = getUniqueFilename();
     fs.writeFileSync(localFilePath, Buffer.from(buffer));
@@ -121,11 +127,11 @@ function evaluatePixel(sample) {
       fs.unlinkSync(localFilePath);
       return cdnUrl;
     } catch (error) {
-      console.error('Error uploading file to CMS:', error);
+      console.error("Error uploading file to CMS:", error);
       throw error;
     }
   } else {
-    console.error('Received unexpected content type:', contentType);
+    console.error("Received unexpected content type:", contentType);
     return null;
   }
 }
