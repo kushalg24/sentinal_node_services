@@ -9,10 +9,9 @@ const port = 5000;
 
 app.use(express.json());
 
-
 app.get("/health", (req, res) => {
   res.status(200).json({ status: "UP" });
-}); 
+});
 
 // Token endpoint (if needed)
 app.get("/sentinelToken", async (req, res) => {
