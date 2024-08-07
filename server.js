@@ -3,7 +3,8 @@ import { getToken } from "./services/TokenService.js";
 import { sendPostRequest as sendNdviRequest } from "./services/NDVIService.js";
 import { sendPostRequest as sendTrueColorRequest } from "./services/TrueColorService.js";
 import { getStatistics } from "./services/StatisticsService.js";
-import { sendPostRequestForImage } from "./services/NDVIOnlyImage.js";
+import { sendPostRequestForNDVIImage } from "./services/NDVIOnlyImage.js";
+import { sendPostRequestForTrueColorImage } from "./services/TrueColorOnlyImage.js";
 import cors from "cors";
 
 const app = express();
@@ -75,14 +76,14 @@ app.post("/sentinelStatistics", async (req, res) => {
   }
 });
 
-app.post("/ndviImage", async (req, res) => {
+app.post("/sentinelNdviImage", async (req, res) => {
   const { coordinates } = req.body;
   if (!coordinates) {
     return res.status(400).json({ error: "Coordinates are required" });
   }
 
   try {
-    const imageBuffer = await sendPostRequestForImage(coordinates);
+    const imageBuffer = await sendPostRequestForNDVIImage(coordinates);
     if (imageBuffer) {
       res.set("Content-Type", "image/jpeg");
       res.send(imageBuffer);
@@ -92,6 +93,27 @@ app.post("/ndviImage", async (req, res) => {
   } catch (error) {
     console.error("Error processing NDVI request:", error);
     res.status(500).json({ error: "Failed to process NDVI request" });
+  }
+});
+
+
+app.post("/sentinelTrueColorImage", async (req, res) => {
+  const { coordinates } = req.body;
+  if (!coordinates) {
+    return res.status(400).json({ error: "Coordinates are required" });
+  }
+
+  try {
+    const imageBuffer = await sendPostRequestForTrueColorImage(coordinates);
+    if (imageBuffer) {
+      res.set("Content-Type", "image/jpeg");
+      res.send(imageBuffer);
+    } else {
+      res.status(500).json({ error: "Failed to process TrueColor request" });
+    }
+  } catch (error) {
+    console.error("Error processing TrueColor request:", error);
+    res.status(500).json({ error: "Failed to process TrueColor request" });
   }
 });
 

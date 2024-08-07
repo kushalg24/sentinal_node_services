@@ -1,14 +1,9 @@
 import fetch from "node-fetch";
 import { FormData } from "formdata-node";
-import fs from "fs";
 import { getToken } from "./TokenService.js";
 
-function getUniqueFilename() {
-  const timestamp = new Date().toISOString().replace(/[:.]/g, "-");
-  return `ndvi-${timestamp}.jpg`;
-}
 
-export async function sendPostRequestForImage(coordinates) {
+export async function sendPostRequestForNDVIImage(coordinates) {
   const token = await getToken();
 
   // Validate coordinates
