@@ -1,10 +1,20 @@
 {
+  "name": "sentinel-node-service",
+  "version": "1.0.0",
+  "description": "A Node.js service for Sentinel data processing",
+  "main": "server.mjs",
+  "type": "module",
   "dependencies": {
     "express": "^4.19.2",
-    "form-data": "^4.0.0",
     "formdata-node": "^6.0.3",
+    "form-data": "^4.0.0",
     "fs": "^0.0.1-security",
     "node-fetch": "^3.3.2"
   },
-  "type": "module"
+  "scripts": {
+    "start": "node server.mjs"
+  },
+  "author": "Your Name",
+  "license": "ISC"
 }
+
