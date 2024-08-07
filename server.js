@@ -3,9 +3,11 @@ import { getToken } from "./services/TokenService.js";
 import { sendPostRequest as sendNdviRequest } from "./services/NDVIService.js";
 import { sendPostRequest as sendTrueColorRequest } from "./services/TrueColorService.js";
 import { getStatistics } from "./services/StatisticsService.js";
-import {sendPostRequestForImage} from "./services/NDVIOnlyImage.js"
+import { sendPostRequestForImage } from "./services/NDVIOnlyImage.js";
+import cors from "cors";
 
 const app = express();
+app.use(cors());
 const port = 5000;
 
 app.use(express.json());
@@ -72,7 +74,6 @@ app.post("/sentinelStatistics", async (req, res) => {
     res.status(500).json({ error: "Failed to fetch statistics" });
   }
 });
-
 
 app.post("/ndviImage", async (req, res) => {
   const { coordinates } = req.body;
